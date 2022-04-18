@@ -10,9 +10,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RoommateShopper">
         <activity
+            android:name=".ViewListActivity"
+            android:exported="false"
+            android:parentActivityName=".ShoppingManagerActivity"/>
+        <activity
+            android:name=".ShoppingManagerActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+        <activity
             android:name=".RegisterActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view){
             Log.d(TAG, "RegisterClickListener.onClick");
+            Intent intent = new Intent(view.getContext(), RegisterActivity.class);
+            view.getContext().startActivity(intent);
         }
     }
 }
