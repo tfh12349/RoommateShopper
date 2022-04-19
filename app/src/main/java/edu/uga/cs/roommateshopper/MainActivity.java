@@ -1,12 +1,25 @@
 package edu.uga.cs.roommateshopper;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
+import com.firebase.ui.auth.IdpResponse;
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
+import com.google.android.gms.auth.api.credentials.IdentityProviders;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -37,7 +52,61 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onClick(View view){
-            Log.d(TAG, "LoginClickListener.onClick");
+            List<AuthUI.IdpConfig> providers = Arrays.asList(
+                    new AuthUI.IdpConfig.EmailBuilder().build()
+            );
+
+            Log.d(TAG, "MainActivity.LoginClickListener.onClick: Begun signing in.");
+
+            // creates the sign in activity based on the
+            // AuthUI.SignInIntentBuilder
+            Intent signInIntent = AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .setTheme(R.style.Theme_RoommateShopper)
+                    .build();
+            signInLauncher.launch(signInIntent);
+        }
+    }
+
+    // this launcher starts the AuthUI login process, then overrides
+    // on activity result to call onSignInResult, which will handle
+    // the result of the intent
+    private ActivityResultLauncher<Intent> signInLauncher =
+            registerForActivityResult(new FirebaseAuthUIActivityResultContract(),
+                    new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
+                        @Override
+                        public void onActivityResult(FirebaseAuthUIAuthenticationResult result) {
+                            onSignInResult(result);
+                        }
+                    });
+
+    /**
+     * This method handles the result of the login process. If a
+     * valid user was called, it is obtained by the process and
+     * calls the ShoppingManagerActivity. Otherwise, it returns
+     * the user to the MainActivity and informs them of the error
+     * @param result the result of the login process
+     */
+    private void onSignInResult(FirebaseAuthUIAuthenticationResult result) {
+        IdpResponse response = result.getIdpResponse();
+
+        // if the user had a successful login
+        if (result.getResultCode() == RESULT_OK)  {
+            // if the response exists
+            if(response != null) {
+                Log.d(TAG, "MainActivity: onSignInResult: response.getEmail(): " + response.getEmail());
+            }
+
+            Intent intent = new Intent(this, ShoppingManagerActivity.class);
+            startActivity(intent);
+        }
+        // if the login failed for any reason
+        else {
+            Log.d(TAG, "MainActivity: onSignInResult: Sign-in failed.");
+
+            Toast.makeText(getApplicationContext(),
+                    "Sign in failed", Toast.LENGTH_SHORT).show();
         }
     }
 
