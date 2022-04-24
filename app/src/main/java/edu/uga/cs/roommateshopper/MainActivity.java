@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * This private class if for the new quiz button, creates a new quiz intent
+     * This private class if for the login button, starts the login process
      */
     private class LoginClickListener implements View.OnClickListener{
         /**
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * This private class if for the new quiz button, creates a new quiz intent
+     * This private class if for the registration button, creates a registration intent
      */
     private class RegisterClickListener implements View.OnClickListener{
         /**

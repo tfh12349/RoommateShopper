@@ -3,7 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/activity_cart.xml" value="0.11141304347826086" />
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/activity_item_look.xml" value="0.11141304347826086" />
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/activity_purchase_look.xml" value="0.11141304347826086" />
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/activity_purchased_list.xml" value="0.11141304347826086" />
         <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/activity_shopping_manager.xml" value="0.22" />
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/add_item_dialog.xml" value="0.11141304347826086" />
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/cart_item.xml" value="0.21" />
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/item.xml" value="0.11141304347826086" />
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/purchased_items.xml" value="0.11141304347826086" />
+        <entry key="..\:/Users/loubs/AndroidStudioProjects/RoommateShopper/app/src/main/res/menu/menu_signed_in_menu.xml" value="0.18645833333333334" />
         <entry key="..\:/Users/tyler/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/tyler/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/activity_register.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/tyler/AndroidStudioProjects/RoommateShopper/app/src/main/res/layout/activity_shopping_manager.xml" value="0.25416666666666665" />

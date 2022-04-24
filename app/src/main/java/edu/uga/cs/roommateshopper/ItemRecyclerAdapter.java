@@ -1,10 +1,14 @@
 package edu.uga.cs.roommateshopper;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -12,6 +16,12 @@ import java.util.List;
 public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapter.ItemHolder>{
 
     private List<Item> items;
+    private Context context;
+
+    public ItemRecyclerAdapter( List<Item> itemList, Context context ) {
+        this.items = itemList;
+        this.context = context;
+    }
 
     @Override
     public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType ) {
@@ -38,6 +48,14 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         itemHolder.name.setText(item.getName());
         itemHolder.count.setText("Count: " + item.getCount());
         itemHolder.details.setText(item.getDetails());
+
+        itemHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ItemLookActivity.class);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
