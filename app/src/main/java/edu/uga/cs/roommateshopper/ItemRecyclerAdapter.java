@@ -53,6 +53,9 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ItemLookActivity.class);
+                intent.putExtra("name", item.getName());
+                intent.putExtra("count", item.getCount());
+                intent.putExtra("details", item.getDetails());
                 context.startActivity(intent);
             }
         });

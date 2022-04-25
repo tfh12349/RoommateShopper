@@ -1,5 +1,6 @@
 package edu.uga.cs.roommateshopper;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,11 +13,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class ShoppingManagerActivity extends AppCompatActivity {
 
     private final String TAG = "ShoppingManagerActivity";
     private Button listButton, purchasedButton;
-
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,21 @@ public class ShoppingManagerActivity extends AppCompatActivity {
         purchasedButton = findViewById(R.id.purchasedList);
         listButton.setOnClickListener(new ListClickListener());
         purchasedButton.setOnClickListener(new PurchasedClickListener());
+
+        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                if( currentUser != null ) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + currentUser.getUid());
+                    String userEmail = currentUser.getEmail();
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out" );
+                }
+            }
+        });
     }
 
     @Override
