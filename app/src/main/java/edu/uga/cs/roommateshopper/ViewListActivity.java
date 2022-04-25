@@ -42,7 +42,10 @@ public class ViewListActivity extends AppCompatActivity implements AddItemDialog
         recyclerView.setLayoutManager( layoutManager );
 
         items = new ArrayList<Item>();
+        adapter = new ItemRecyclerAdapter(items, this);
 
+        //Temporary
+        recyclerView.setAdapter(adapter);
     }
 
     @Override

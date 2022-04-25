@@ -4,38 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShoppingManagerActivity">
+    tools:context=".SettleActivity">
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="354dp"
-        android:layout_height="274dp"
-        android:layout_marginBottom="100dp"
-        android:text="You can see the current list of items to edit and buy items needed, or you can look at recent purchases, make any necessary changes, and settle the costs!"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/currentList"
+        android:id="@+id/totalPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/pricePerPerson"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <Button
-        android:id="@+id/currentList"
+    <TextView
+        android:id="@+id/pricePerPerson"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View Current List"
-        app:layout_constraintBottom_toTopOf="@+id/purchasedList"
+        android:layout_marginBottom="100dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/settleFinish"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/totalPrice" />
 
     <Button
-        android:id="@+id/purchasedList"
+        android:id="@+id/settleFinish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View Recently Purchased"
+        android:text="Settle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/currentList" />
+        app:layout_constraintTop_toBottomOf="@+id/pricePerPerson" />
 </androidx.constraintlayout.widget.ConstraintLayout>
