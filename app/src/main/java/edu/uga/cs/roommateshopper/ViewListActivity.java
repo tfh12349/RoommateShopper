@@ -6,6 +6,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,12 +23,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class ViewListActivity extends AppCompatActivity implements AddItemDialogFragment.AddItemDialogListener {
+public class ViewListActivity extends AppCompatActivity
+        implements AddItemDialogFragment.AddItemDialogListener, ItemViewDialogFragment.ItemViewDialogListener {
 
     private final String TAG = "ViewListActivity";
     private RecyclerView recyclerView;
@@ -79,7 +83,7 @@ public class ViewListActivity extends AppCompatActivity implements AddItemDialog
                 Log.d( TAG, "ViewListActivity.onCreate(): setting recyclerAdapter" );
 
                 // Now, create a JobLeadRecyclerAdapter to populate a ReceyclerView to display the job leads.
-                adapter = new ItemRecyclerAdapter( items, getApplicationContext() );
+                adapter = new ItemRecyclerAdapter( items, ViewListActivity.this);
                 recyclerView.setAdapter( adapter );
             }
 
@@ -118,6 +122,81 @@ public class ViewListActivity extends AppCompatActivity implements AddItemDialog
                     }
                 });
 
+    }
+
+    @Override
+    public void onFinishItemViewDialog(int position, Item item, int action, String originalDetails){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("shoppinglist");
+
+        if(action == 1){
+            //DatabaseReference updateRef = myRef.child(item.getDetails());
+            Query query = myRef.orderByChild("details").equalTo(item.getDetails());
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        snapshot.getRef().child("name").setValue(item.getName());
+                        snapshot.getRef().child("details").setValue(item.getDetails());
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+            //updateRef.child("name").setValue(item.getName());
+            //updateRef.child("count").setValue(item.getCount());
+            //updateRef.child("details").setValue(item.getDetails());
+            items.set(position, item);
+            adapter.notifyItemChanged(position);
+        }
+        else if(action == 2){
+            Query query = myRef.orderByChild("details").equalTo(item.getDetails());
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        snapshot.getRef().removeValue();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+            items.remove(position);
+            adapter.notifyItemRemoved(position);
+        }
+        else if (action == 3){
+            String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+            String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+            DatabaseReference cartRef = database.getReference("carts").child(cartPath);
+            cartRef.push().setValue(item);
+
+            Query query = myRef.orderByChild("details").equalTo(item.getDetails());
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        snapshot.getRef().removeValue();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+            items.remove(position);
+            adapter.notifyItemRemoved(position);
+        }
+        else{
+            Toast.makeText( getApplicationContext(), "Failed to do anything" + item.getName(),
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     void showDialogFragment( DialogFragment newFragment ) {

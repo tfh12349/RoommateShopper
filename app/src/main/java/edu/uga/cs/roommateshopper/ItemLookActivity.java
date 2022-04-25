@@ -7,16 +7,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ItemLookActivity extends AppCompatActivity {
 
+    private EditText updateName, updateCount, updateDetails;
+    private Button updateButton, deleteButton, addToCartButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_look);
+
+        Intent intent = getIntent();
 
         final ActionBar ab = getSupportActionBar();
         assert ab != null;
