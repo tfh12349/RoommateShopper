@@ -65,9 +65,14 @@ public class ShoppingManagerActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.logout:
                 Toast.makeText(this, "Logout Clicked", Toast.LENGTH_SHORT).show();
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.viewCart:
                 Toast.makeText(this, "View Cart Clicked", Toast.LENGTH_SHORT).show();
+                Intent intentTwo = new Intent(getApplicationContext(), CartActivity.class);
+                startActivity(intentTwo);
                 return true;
             case R.id.menu_close:
                 finish();

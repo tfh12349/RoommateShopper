@@ -1,18 +1,23 @@
 package edu.uga.cs.roommateshopper;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +41,10 @@ public class ViewListActivity extends AppCompatActivity implements AddItemDialog
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_list);
+
+        final ActionBar ab = getSupportActionBar();
+        assert ab != null;
+        ab.show();
 
         recyclerView = (RecyclerView) findViewById( R.id.recyclerView );
 
@@ -113,6 +122,35 @@ public class ViewListActivity extends AppCompatActivity implements AddItemDialog
 
     void showDialogFragment( DialogFragment newFragment ) {
         newFragment.show( getSupportFragmentManager(), null);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_signed_in_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+                Toast.makeText(this, "Logout Clicked", Toast.LENGTH_SHORT).show();
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.viewCart:
+                Toast.makeText(this, "View Cart Clicked", Toast.LENGTH_SHORT).show();
+                Intent intentTwo = new Intent(getApplicationContext(), CartActivity.class);
+                startActivity(intentTwo);
+                return true;
+            case R.id.menu_close:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
