@@ -38,6 +38,7 @@ public class CartActivity extends AppCompatActivity
     private RecyclerView.Adapter adapter;
 
     private List<Item> items;
+    private List<String> keys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +70,7 @@ public class CartActivity extends AppCompatActivity
         DatabaseReference myRef = database.getReference("carts").child(cartPath);
 
         items = new ArrayList<Item>();
+        keys = new ArrayList<String>();
 
         myRef.addListenerForSingleValueEvent( new ValueEventListener() {
 
@@ -79,12 +81,13 @@ public class CartActivity extends AppCompatActivity
                 for( DataSnapshot postSnapshot: snapshot.getChildren() ) {
                     Item item = postSnapshot.getValue(Item.class);
                     items.add(item);
+                    keys.add(myRef.getKey());
                     Log.d( TAG, "ViewListActivity.onCreate(): added: " + item );
                 }
                 Log.d( TAG, "ViewListActivity.onCreate(): setting recyclerAdapter" );
 
                 // Now, create a JobLeadRecyclerAdapter to populate a ReceyclerView to display the job leads.
-                adapter = new CartRecyclerAdapter( items, CartActivity.this);
+                adapter = new CartRecyclerAdapter( items, keys, CartActivity.this);
                 recyclerView.setAdapter( adapter );
             }
 
@@ -134,9 +137,11 @@ public class CartActivity extends AppCompatActivity
         Purchase newPurch = new Purchase(cartPath, price, items);
         newRef.push().setValue(newPurch);
 
-        Query query = myRef.orderByChild("details");
+        myRef.removeValue();
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        /**Query query = myRef.orderByKey();
+
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
@@ -147,20 +152,22 @@ public class CartActivity extends AppCompatActivity
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
-        });
-        adapter.notifyItemRangeRemoved(0, items.size()-1);
+        });**/
+        adapter.notifyItemRangeRemoved(0, adapter.getItemCount());
         items.clear();
+        keys.clear();
     }
 
     @Override
-    public void onFinishRemoveItemDialog(int position, Item item, String details ){
+    public void onFinishRemoveItemDialog(int position, Item item, String key ){
         String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("carts").child(cartPath);
         DatabaseReference shoppingReference = database.getReference("shoppinglist");
         shoppingReference.push().setValue(item);
-        Query query = myRef.orderByChild("details").equalTo(details);
+        myRef.child(key).removeValue();
+        /**Query query = myRef.child(key);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -173,7 +180,7 @@ public class CartActivity extends AppCompatActivity
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
-        });
+        });**/
 
         items.remove(position);
         adapter.notifyItemRemoved(position);

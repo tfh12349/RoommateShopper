@@ -40,6 +40,7 @@ public class ViewListActivity extends AppCompatActivity
     private RecyclerView.Adapter adapter;
 
     private List<Item> items;
+    private List<String> keys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class ViewListActivity extends AppCompatActivity
         DatabaseReference myRef = database.getReference("shoppinglist");
 
         items = new ArrayList<Item>();
+        keys = new ArrayList<String>();
 
         myRef.addListenerForSingleValueEvent( new ValueEventListener() {
 
@@ -78,12 +80,13 @@ public class ViewListActivity extends AppCompatActivity
                 for( DataSnapshot postSnapshot: snapshot.getChildren() ) {
                     Item item = postSnapshot.getValue(Item.class);
                     items.add(item);
+                    keys.add(postSnapshot.getKey());
                     Log.d( TAG, "ViewListActivity.onCreate(): added: " + item );
                 }
                 Log.d( TAG, "ViewListActivity.onCreate(): setting recyclerAdapter" );
 
                 // Now, create a JobLeadRecyclerAdapter to populate a ReceyclerView to display the job leads.
-                adapter = new ItemRecyclerAdapter( items, ViewListActivity.this);
+                adapter = new ItemRecyclerAdapter( items, keys, ViewListActivity.this);
                 recyclerView.setAdapter( adapter );
             }
 
@@ -105,6 +108,7 @@ public class ViewListActivity extends AppCompatActivity
 
                         // Update the recycler view to include the new job lead
                         items.add( item );
+                        keys.add(myRef.push().getKey());
                         adapter.notifyItemInserted(items.size() - 1);
 
                         Log.d( TAG, "Item saved: " + item );
@@ -125,27 +129,33 @@ public class ViewListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFinishItemViewDialog(int position, Item item, int action, String originalDetails){
+    public void onFinishItemViewDialog(int position, Item item, int action, String key){ //originalDetails used to be at end
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("shoppinglist");
 
         if(action == 1){
             //DatabaseReference updateRef = myRef.child(item.getDetails());
-            Query query = myRef.orderByChild("details").equalTo(item.getDetails());
+            ///Query query = myRef.child(key);
+            myRef.child(key).child("name").setValue(item.getName());
+            myRef.child(key).child("count").setValue(item.getCount());
+            myRef.child(key).child("details").setValue(item.getDetails());
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
+            /**query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                        snapshot.getRef().child("name").setValue(item.getName());
-                        snapshot.getRef().child("details").setValue(item.getDetails());
+                        //snapshot.getRef().child("name").setValue(item.getName());
+                        //snapshot.getRef().child("details").setValue(item.getDetails());
+                        if(snapshot.getKey().equals("name")){ snapshot.getRef().setValue(item.getName()); }
+                        else if(snapshot.getKey().equals("count")){ snapshot.getRef().setValue(item.getCount()); }
+                        else if(snapshot.getKey().equals("details")){ snapshot.getRef().setValue(item.getDetails()); }
                     }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
-            });
+            });**/
             //updateRef.child("name").setValue(item.getName());
             //updateRef.child("count").setValue(item.getCount());
             //updateRef.child("details").setValue(item.getDetails());
@@ -153,9 +163,9 @@ public class ViewListActivity extends AppCompatActivity
             adapter.notifyItemChanged(position);
         }
         else if(action == 2){
-            Query query = myRef.orderByChild("details").equalTo(item.getDetails());
+            //Query query = myRef.child(key); //orderByChild("details").equalTo(item.getDetails());
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
+            /**query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
@@ -166,8 +176,10 @@ public class ViewListActivity extends AppCompatActivity
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
-            });
+            });**/
+            myRef.child(key).removeValue();
             items.remove(position);
+            keys.remove(position);
             adapter.notifyItemRemoved(position);
         }
         else if (action == 3){
@@ -176,9 +188,10 @@ public class ViewListActivity extends AppCompatActivity
             DatabaseReference cartRef = database.getReference("carts").child(cartPath);
             cartRef.push().setValue(item);
 
-            Query query = myRef.orderByChild("details").equalTo(item.getDetails());
+            myRef.child(key).removeValue();
+            //Query query = myRef.child(key);//.orderByChild("details").equalTo(item.getDetails());
 
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
+            /**query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
@@ -189,8 +202,9 @@ public class ViewListActivity extends AppCompatActivity
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
-            });
+            });**/
             items.remove(position);
+            keys.remove(position);
             adapter.notifyItemRemoved(position);
         }
         else{

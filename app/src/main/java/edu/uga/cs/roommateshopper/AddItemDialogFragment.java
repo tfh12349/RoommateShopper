@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class AddItemDialogFragment extends DialogFragment {
 
@@ -49,13 +50,21 @@ public class AddItemDialogFragment extends DialogFragment {
     private class PositiveButtonClickListener implements DialogInterface.OnClickListener{
         @Override
         public void onClick(DialogInterface dialog, int which){
-            String name = nameView.getText().toString();
-            int count = Integer.parseInt(countView.getText().toString());
-            String details = detailsView.getText().toString();
-            Item item = new Item(name, count, details);
-            AddItemDialogListener listener = (AddItemDialogListener) getActivity();
-            listener.onFinishNewItemDialog(item);
-            dismiss();
+            if((!nameView.getText().toString().equals(""))
+                    && (!countView.getText().toString().equals(""))
+                    && (!detailsView.getText().toString().equals(""))) {
+                String name = nameView.getText().toString();
+                int count = Integer.parseInt(countView.getText().toString());
+                String details = detailsView.getText().toString();
+                Item item = new Item(name, count, details);
+                AddItemDialogListener listener = (AddItemDialogListener) getActivity();
+                listener.onFinishNewItemDialog(item);
+                dismiss();
+            }
+            else{
+                Toast.makeText( getContext(), "One of the necessary elements is blank",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

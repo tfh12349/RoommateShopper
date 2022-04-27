@@ -16,11 +16,13 @@ import java.util.List;
 public class CartRecyclerAdapter extends RecyclerView.Adapter<CartRecyclerAdapter.CartHolder>{
 
     private List<Item> items;
+    private List<String> keys;
     private Context context;
     private final String TAG = "ItemRecyclerAdapter";
 
-    public CartRecyclerAdapter(List<Item> itemList , Context context) {
+    public CartRecyclerAdapter(List<Item> itemList, List<String> keys , Context context) {
         this.items = itemList;
+        this.keys = keys;
         this.context = context;
     }
 
@@ -47,8 +49,9 @@ public class CartRecyclerAdapter extends RecyclerView.Adapter<CartRecyclerAdapte
                     //Log.d(TAG, "Item name clicked" + name.getText().toString());
                     int countInt = items.get(getAdapterPosition()).getCount();
                     String details = items.get(getAdapterPosition()).getDetails();
+                    String key = keys.get(getAdapterPosition());
                     DialogFragment removeViewFragment =
-                            RemoveItemDialogFragment.newInstance(getAdapterPosition(), itemName.getText().toString(), countInt, details );
+                            RemoveItemDialogFragment.newInstance(getAdapterPosition(), itemName.getText().toString(), countInt, details, key );
                     removeViewFragment.show(((AppCompatActivity)context).getSupportFragmentManager(), "fragment");
 
                 }

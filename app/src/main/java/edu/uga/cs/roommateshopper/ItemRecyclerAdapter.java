@@ -17,12 +17,14 @@ import java.util.List;
 public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapter.ItemHolder>{
 
     private List<Item> items;
+    private List<String> keys;
     private Context context;
     //private View.OnClickListener itemClickListener
     private final String TAG = "ItemRecyclerAdapter";
 
-    public ItemRecyclerAdapter( List<Item> itemList , Context context) {
+    public ItemRecyclerAdapter( List<Item> itemList , List<String> keyList, Context context) {
         this.items = itemList;
+        this.keys = keyList;
         this.context = context;
     }
 
@@ -53,8 +55,9 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
                     //context.startActivity(intent);
                     Log.d(TAG, "Item name clicked" + name.getText().toString());
                     int countInt = items.get(getAdapterPosition()).getCount();
+                    String key = keys.get(getAdapterPosition());
                     DialogFragment itemViewFragment =
-                            ItemViewDialogFragment.newInstance(getAdapterPosition(), name.getText().toString(), countInt, details.getText().toString() );
+                            ItemViewDialogFragment.newInstance(getAdapterPosition(), name.getText().toString(), countInt, details.getText().toString(), key );
                     itemViewFragment.show(((AppCompatActivity)context).getSupportFragmentManager(), "fragment");
 
                 }

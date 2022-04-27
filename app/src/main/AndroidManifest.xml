@@ -23,7 +23,8 @@
             android:parentActivityName=".ShoppingManagerActivity"/>
         <activity
             android:name=".CartActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ShoppingManagerActivity"/>
         <activity
             android:name=".ItemLookActivity"
             android:exported="false"

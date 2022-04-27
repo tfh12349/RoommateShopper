@@ -19,18 +19,18 @@ public class RemoveItemDialogFragment extends DialogFragment {
 
     private TextView text;
     private int position;
-    private String name,details;
+    private String name,details, key;
     private int count;
 
     public interface RemoveItemDialogListener {
-        void onFinishRemoveItemDialog(int position, Item item, String details );
+        void onFinishRemoveItemDialog(int position, Item item, String key );
     }
 
     public RemoveItemDialogFragment(){
         super();
     }
 
-    public static RemoveItemDialogFragment newInstance(int position, String name, int count, String details) {
+    public static RemoveItemDialogFragment newInstance(int position, String name, int count, String details, String key) {
         RemoveItemDialogFragment dialog = new RemoveItemDialogFragment();
 
         // Supply job lead values as an argument.
@@ -39,6 +39,7 @@ public class RemoveItemDialogFragment extends DialogFragment {
         args.putString("name", name);
         args.putInt("count", count);
         args.putString("details", details);
+        args.putString("key", key);
         dialog.setArguments(args);
 
         return dialog;
@@ -50,6 +51,7 @@ public class RemoveItemDialogFragment extends DialogFragment {
         name = getArguments().getString( "name" );
         count = getArguments().getInt ("count" );
         details = getArguments().getString( "details" );
+        key = getArguments().getString("key");
 
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View layout = inflater.inflate(R.layout.fragment_remove_item_dialog,
@@ -77,7 +79,7 @@ public class RemoveItemDialogFragment extends DialogFragment {
         public void onClick(DialogInterface dialog, int which){
             Item item = new Item(name, count, details);
             RemoveItemDialogFragment.RemoveItemDialogListener listener = (RemoveItemDialogFragment.RemoveItemDialogListener) getActivity();
-            listener.onFinishRemoveItemDialog(position, item, details);
+            listener.onFinishRemoveItemDialog(position, item, key);
             dismiss();
         }
     }

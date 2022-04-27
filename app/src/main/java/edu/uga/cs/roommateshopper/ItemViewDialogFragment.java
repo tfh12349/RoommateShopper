@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,20 +31,20 @@ public class ItemViewDialogFragment extends DialogFragment {
     private EditText updateName, updateCount, updateDetails;
     private int position;
 
-    private String name, details;
+    private String name, details, key;
     private int count;
 
 
 
     public interface ItemViewDialogListener {
-        void onFinishItemViewDialog(int position, Item item, int action, String details);
+        void onFinishItemViewDialog(int position, Item item, int action, String key);
     }
 
     public ItemViewDialogFragment(){
         super();
     }
 
-    public static ItemViewDialogFragment newInstance(int position, String name, int count, String details) {
+    public static ItemViewDialogFragment newInstance(int position, String name, int count, String details, String key) {
         ItemViewDialogFragment dialog = new ItemViewDialogFragment();
 
         // Supply job lead values as an argument.
@@ -52,6 +53,7 @@ public class ItemViewDialogFragment extends DialogFragment {
         args.putString("name", name);
         args.putInt("count", count);
         args.putString("details", details);
+        args.putString("key", key);
         dialog.setArguments(args);
 
         return dialog;
@@ -64,6 +66,7 @@ public class ItemViewDialogFragment extends DialogFragment {
         name = getArguments().getString( "name" );
         count = getArguments().getInt ("count" );
         details = getArguments().getString( "details" );
+        key = getArguments().getString("key");
 
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View layout = inflater.inflate(R.layout.fragment_item_view_dialog,
@@ -105,27 +108,35 @@ public class ItemViewDialogFragment extends DialogFragment {
     private class SaveButtonClickListener implements DialogInterface.OnClickListener {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            String originalDetails = getDetails();
-            String name = updateName.getText().toString();
-            int count = Integer.parseInt(updateCount.getText().toString());
-            String details = updateDetails.getText().toString();
-            Item item = new Item( name, count, details );
+            //String originalDetails = getDetails();
+            if((!updateName.getText().toString().equals(""))
+                    && (!updateCount.getText().toString().equals(""))
+                    && (!updateDetails.getText().toString().equals(""))) {
+                String name = updateName.getText().toString();
+                int count = Integer.parseInt(updateCount.getText().toString());
+                String details = updateDetails.getText().toString();
+                Item item = new Item(name, count, details);
 
-            // get the Activity's listener to add the new job lead
-            ItemViewDialogFragment.ItemViewDialogListener listener = (ItemViewDialogFragment.ItemViewDialogListener) getActivity();
+                // get the Activity's listener to add the new job lead
+                ItemViewDialogFragment.ItemViewDialogListener listener = (ItemViewDialogFragment.ItemViewDialogListener) getActivity();
 
-            // add the new job lead
-            listener.onFinishItemViewDialog( position, item, 1 , originalDetails);
+                // add the new job lead
+                listener.onFinishItemViewDialog(position, item, 1, key);
 
-            // close the dialog
-            dismiss();
+                // close the dialog
+                dismiss();
+            }
+            else{
+                Toast.makeText( getContext(), "One of the necessary elements is blank",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     private class DeleteButtonClickListener implements DialogInterface.OnClickListener {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            String originalDetails = getDetails();
+            //String originalDetails = getDetails();
             String name = updateName.getText().toString();
             int count = Integer.parseInt(updateCount.getText().toString());
             String details = updateDetails.getText().toString();
@@ -138,7 +149,7 @@ public class ItemViewDialogFragment extends DialogFragment {
             ItemViewDialogFragment.ItemViewDialogListener listener = (ItemViewDialogFragment.ItemViewDialogListener) getActivity();
 
             // add the new job lead
-            listener.onFinishItemViewDialog( position, item, 2 , originalDetails);
+            listener.onFinishItemViewDialog( position, item, 2 , key);
 
             // close the dialog
             dismiss();
@@ -148,7 +159,7 @@ public class ItemViewDialogFragment extends DialogFragment {
     private class CartButtonClickListener implements DialogInterface.OnClickListener {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            String originalDetails = getDetails();
+            //String originalDetails = getDetails();
             String name = updateName.getText().toString();
             int count = Integer.parseInt(updateCount.getText().toString());
             String details = updateDetails.getText().toString();
@@ -186,7 +197,7 @@ public class ItemViewDialogFragment extends DialogFragment {
             ItemViewDialogFragment.ItemViewDialogListener listener = (ItemViewDialogFragment.ItemViewDialogListener) getActivity();
 
             // add the new job lead
-            listener.onFinishItemViewDialog( position, item, 3 , originalDetails);
+            listener.onFinishItemViewDialog( position, item, 3 , key);
 
             // close the dialog
             dismiss();
