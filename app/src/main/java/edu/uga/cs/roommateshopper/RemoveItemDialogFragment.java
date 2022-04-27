@@ -53,11 +53,19 @@ public class RemoveItemDialogFragment extends DialogFragment {
         details = getArguments().getString( "details" );
         key = getArguments().getString("key");
 
+        if(onSavedInstanceState != null){
+            position = onSavedInstanceState.getInt( "position" );
+            name = onSavedInstanceState.getString( "name" );
+            count = onSavedInstanceState.getInt ("count" );
+            details = onSavedInstanceState.getString( "details" );
+            key = onSavedInstanceState.getString("key");
+        }
+
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View layout = inflater.inflate(R.layout.fragment_remove_item_dialog,
                 (ViewGroup) getActivity().findViewById(R.id.rootRemove));
         text = layout.findViewById(R.id.askDelete);
-        text.setText("Are you sure you want to delete" + name + "?");
+        text.setText("Are you sure you want to delete " + name + "?");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(layout);
@@ -82,5 +90,24 @@ public class RemoveItemDialogFragment extends DialogFragment {
             listener.onFinishRemoveItemDialog(position, item, key);
             dismiss();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putInt( "position", position );
+        outState.putString("name", name);
+        outState.putInt("count", count);
+        outState.putString("details", details);
+        outState.putString("key", key);
+    }
+
+    @Override
+    public void onDestroyView(){
+        Dialog dialog = getDialog();
+        if(dialog != null && dialog.isShowing()){
+            dismiss();
+        }
+        super.onDestroyView();
     }
 }

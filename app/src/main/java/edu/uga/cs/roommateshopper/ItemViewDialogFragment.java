@@ -68,6 +68,14 @@ public class ItemViewDialogFragment extends DialogFragment {
         details = getArguments().getString( "details" );
         key = getArguments().getString("key");
 
+        if(savedInstanceState != null){
+            position = savedInstanceState.getInt( "position" );
+            name = savedInstanceState.getString( "name" );
+            count = savedInstanceState.getInt ("count" );
+            details = savedInstanceState.getString( "details" );
+            key = savedInstanceState.getString("key");
+        }
+
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View layout = inflater.inflate(R.layout.fragment_item_view_dialog,
                 (ViewGroup) getActivity().findViewById(R.id.rootItem));
@@ -203,4 +211,24 @@ public class ItemViewDialogFragment extends DialogFragment {
             dismiss();
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putInt( "position", position );
+        outState.putString("name", updateName.getText().toString());
+        if(!updateCount.getText().toString().equals("")){ outState.putInt("count", Integer.parseInt(updateCount.getText().toString()));}
+        else{outState.putInt("count", count);}
+        outState.putString("details", updateDetails.getText().toString());
+        outState.putString("key", key);
+    }
+
+    /**@Override
+    public void onDestroyView(){
+        Dialog dialog = getDialog();
+        if(dialog != null && dialog.isShowing()){
+            dismiss();
+        }
+        super.onDestroyView();
+    }**/
 }

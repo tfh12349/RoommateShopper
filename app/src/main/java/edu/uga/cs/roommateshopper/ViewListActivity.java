@@ -3,6 +3,8 @@ package edu.uga.cs.roommateshopper;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,7 +60,8 @@ public class ViewListActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 DialogFragment newFragment = new AddItemDialogFragment();
-                showDialogFragment( newFragment );
+                //showDialogFragment( newFragment );
+                newFragment.show(getSupportFragmentManager(), "addFragment");
             }
         });
 

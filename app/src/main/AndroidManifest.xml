@@ -12,38 +12,47 @@
         <activity
             android:name=".SettleActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".PurchasedListActivity"/>
         <activity
             android:name=".PurchaseLookActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".PurchasedListActivity"/>
         <activity
             android:name=".PurchasedListActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".ShoppingManagerActivity"/>
         <activity
             android:name=".CartActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".ShoppingManagerActivity"/>
         <activity
             android:name=".ItemLookActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".ViewListActivity"/>
         <activity
             android:name=".ViewListActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".ShoppingManagerActivity" />
         <activity
             android:name=".ShoppingManagerActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
+            android:configChanges="orientation"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

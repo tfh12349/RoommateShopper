@@ -32,6 +32,12 @@ public class AddItemDialogFragment extends DialogFragment {
         countView = layout.findViewById(R.id.count);
         detailsView = layout.findViewById(R.id.details);
 
+        if(onSavedInstanceState != null){
+            nameView.setText(onSavedInstanceState.getString("name"));
+            if(onSavedInstanceState.getInt("count") != -1){ countView.setText("" + onSavedInstanceState.getInt("count"));}
+            detailsView.setText(onSavedInstanceState.getString("details"));
+        }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(layout);
         builder.setTitle("New Item for List");
@@ -67,4 +73,22 @@ public class AddItemDialogFragment extends DialogFragment {
             }
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putString("name", nameView.getText().toString());
+        if(!countView.getText().toString().equals("")){ outState.putInt("count", Integer.parseInt(countView.getText().toString()));}
+        else{outState.putInt("count", -1);}
+        outState.putString("details", detailsView.getText().toString());
+    }
+
+    /**@Override
+    public void onDestroyView(){
+        Dialog dialog = getDialog();
+        if(dialog != null && dialog.isShowing()){
+            dismiss();
+        }
+        super.onDestroyView();
+    }**/
 }
