@@ -35,7 +35,7 @@ public class ViewListActivity extends AppCompatActivity
 
     private final String TAG = "ViewListActivity";
     private RecyclerView recyclerView;
-    private FloatingActionButton floater;
+    //private FloatingActionButton floater;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
 

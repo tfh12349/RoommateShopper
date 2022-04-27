@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+// This class is not used.
 public class ItemLookActivity extends AppCompatActivity {
 
     private EditText updateName, updateCount, updateDetails;

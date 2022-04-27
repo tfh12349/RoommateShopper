@@ -2,16 +2,42 @@ package edu.uga.cs.roommateshopper;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
-public class CartActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CartActivity extends AppCompatActivity
+        implements PurchaseDialogFragment.PurchaseDialogListener, RemoveItemDialogFragment.RemoveItemDialogListener{
+
+    private final String TAG = "CartActivity";
+    private RecyclerView recyclerView;
+    private Button button;
+    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.Adapter adapter;
+
+    private List<Item> items;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +47,52 @@ public class CartActivity extends AppCompatActivity {
         final ActionBar ab = getSupportActionBar();
         assert ab != null;
         ab.show();
+
+        recyclerView = (RecyclerView) findViewById( R.id.cartList );
+
+        button = (Button) findViewById(R.id.purchaseCart);
+        button.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFragment = new PurchaseDialogFragment();
+                newFragment.show(getSupportFragmentManager(), null);
+            }
+        });
+
+        layoutManager = new LinearLayoutManager(this );
+        recyclerView.setLayoutManager( layoutManager );
+
+        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("carts").child(cartPath);
+
+        items = new ArrayList<Item>();
+
+        myRef.addListenerForSingleValueEvent( new ValueEventListener() {
+
+            @Override
+            public void onDataChange( DataSnapshot snapshot ) {
+                // Once we have a DataSnapshot object, knowing that this is a list,
+                // we need to iterate over the elements and place them on a List.
+                for( DataSnapshot postSnapshot: snapshot.getChildren() ) {
+                    Item item = postSnapshot.getValue(Item.class);
+                    items.add(item);
+                    Log.d( TAG, "ViewListActivity.onCreate(): added: " + item );
+                }
+                Log.d( TAG, "ViewListActivity.onCreate(): setting recyclerAdapter" );
+
+                // Now, create a JobLeadRecyclerAdapter to populate a ReceyclerView to display the job leads.
+                adapter = new CartRecyclerAdapter( items, CartActivity.this);
+                recyclerView.setAdapter( adapter );
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getMessage());
+            }
+        } );
     }
 
     @Override
@@ -40,7 +112,7 @@ public class CartActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.viewCart:
-                Toast.makeText(this, "View Cart Clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Already Viewing Cart", Toast.LENGTH_SHORT).show();
                 //Intent intentTwo = new Intent(getApplicationContext(), CartActivity.class);
                 //startActivity(intentTwo);
                 return true;
@@ -50,5 +122,60 @@ public class CartActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onFinishPurchaseDialog(double price){
+        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("carts").child(cartPath);
+        DatabaseReference newRef = database.getReference("purchases");
+        Purchase newPurch = new Purchase(cartPath, price, items);
+        newRef.push().setValue(newPurch);
+
+        Query query = myRef.orderByChild("details");
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    snapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        adapter.notifyItemRangeRemoved(0, items.size()-1);
+        items.clear();
+    }
+
+    @Override
+    public void onFinishRemoveItemDialog(int position, Item item, String details ){
+        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("carts").child(cartPath);
+        DatabaseReference shoppingReference = database.getReference("shoppinglist");
+        shoppingReference.push().setValue(item);
+        Query query = myRef.orderByChild("details").equalTo(details);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    snapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        items.remove(position);
+        adapter.notifyItemRemoved(position);
     }
 }
