@@ -28,65 +28,86 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is the activity for the cart.
+ */
 public class CartActivity extends AppCompatActivity
         implements PurchaseDialogFragment.PurchaseDialogListener, RemoveItemDialogFragment.RemoveItemDialogListener{
 
     private final String TAG = "CartActivity";
+
+    // Set up the RecyclerView, the Layout Manager, and the adapter, as well as the Button
     private RecyclerView recyclerView;
     private Button button;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
 
+    // Set up the list of items and the list of keys (keys are for the items
     private List<Item> items;
     private List<String> keys;
 
+    /**
+     * This is the onCreate method. It sets up the action bar, the recycler view, and the adapter
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+        // Set up the action bar
         final ActionBar ab = getSupportActionBar();
         assert ab != null;
         ab.show();
 
+        // Set the recyclerView to the cartList
         recyclerView = (RecyclerView) findViewById( R.id.cartList );
 
+        // Set up the button
         button = (Button) findViewById(R.id.purchaseCart);
+        // Set up the onClickListener
         button.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Create and show the PurchaseDialogFragment
                 DialogFragment newFragment = new PurchaseDialogFragment();
                 newFragment.show(getSupportFragmentManager(), null);
             }
         });
 
+        // Set up the layoutManager and give it to the recyclerView
         layoutManager = new LinearLayoutManager(this );
         recyclerView.setLayoutManager( layoutManager );
 
+        // Set the cartPath string by getting the beginning of the user email
         String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
 
+        // Get the firebase database and get the cart for the user
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("carts").child(cartPath);
 
+        // Set the two lists to new ArrayLists of the necessary types
         items = new ArrayList<Item>();
         keys = new ArrayList<String>();
 
+        // Add the listener for the single event
         myRef.addListenerForSingleValueEvent( new ValueEventListener() {
 
             @Override
             public void onDataChange( DataSnapshot snapshot ) {
-                // Once we have a DataSnapshot object, knowing that this is a list,
-                // we need to iterate over the elements and place them on a List.
+                // For every item in the list
                 for( DataSnapshot postSnapshot: snapshot.getChildren() ) {
+                    // Get the item in the form of the Item class
                     Item item = postSnapshot.getValue(Item.class);
+                    // Add the item to items and add the key to keys
                     items.add(item);
                     keys.add(myRef.getKey());
                     Log.d( TAG, "ViewListActivity.onCreate(): added: " + item );
                 }
                 Log.d( TAG, "ViewListActivity.onCreate(): setting recyclerAdapter" );
 
-                // Now, create a JobLeadRecyclerAdapter to populate a ReceyclerView to display the job leads.
+                // Now, create a cartRecyclerAdapter to populate a RecyclerView to display the cart.
                 adapter = new CartRecyclerAdapter( items, keys, CartActivity.this);
                 recyclerView.setAdapter( adapter );
             }
@@ -98,6 +119,11 @@ public class CartActivity extends AppCompatActivity
         } );
     }
 
+    /**
+     * This method creates the option menu, based on the menu_signed_in_menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -105,16 +131,25 @@ public class CartActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * This method is for when one of the options for the menu is selected
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.logout:
+                // Print a message
                 Toast.makeText(this, "Logout Clicked", Toast.LENGTH_SHORT).show();
+                // Sign out the user
                 FirebaseAuth.getInstance().signOut();
+                // Return to the MainActivity
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.viewCart:
+                // Print a message
                 Toast.makeText(this, "Already Viewing Cart", Toast.LENGTH_SHORT).show();
                 //Intent intentTwo = new Intent(getApplicationContext(), CartActivity.class);
                 //startActivity(intentTwo);
@@ -127,16 +162,30 @@ public class CartActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This is a method overridden from the PurchaseDialogFragment.PurchaseDialogListener class. It
+     * is used to finish the purchase
+     *
+     * @param price
+     */
     @Override
     public void onFinishPurchaseDialog(double price){
+        // Set up the cart path
         String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+
+        // Get the database and the cart of the user
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("carts").child(cartPath);
+
+        // Get the purchases list
         DatabaseReference newRef = database.getReference("purchases");
+
+        // Create a purchase, and add it to the purchases list
         Purchase newPurch = new Purchase(cartPath, price, items);
         newRef.push().setValue(newPurch);
 
+        // Remove the cart
         myRef.removeValue();
 
         /**Query query = myRef.orderByKey();
@@ -153,19 +202,35 @@ public class CartActivity extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError) {
             }
         });**/
+        // Notify the adapter that it is all gone, and clear the lists
         adapter.notifyItemRangeRemoved(0, adapter.getItemCount());
         items.clear();
         keys.clear();
     }
 
+    /**
+     * This is a method overridden from the RemoveItemDialogFragment.RemoveItemDialogListener class. It
+     * is used to finish removing an item
+     *
+     * @param position
+     * @param item
+     * @param key
+     */
     @Override
     public void onFinishRemoveItemDialog(int position, Item item, String key ){
+        // Set up the cart path
         String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+
+        // Get the database and the cart of the user
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("carts").child(cartPath);
+
+        // Get a reference to the shopping list, then add the item back
         DatabaseReference shoppingReference = database.getReference("shoppinglist");
         shoppingReference.push().setValue(item);
+
+        // Remove the value from the cart
         myRef.child(key).removeValue();
         /**Query query = myRef.child(key);
 
@@ -182,7 +247,9 @@ public class CartActivity extends AppCompatActivity
             }
         });**/
 
+        // Remove the item from the lists and notify the adapter
         items.remove(position);
+        keys.remove(position);
         adapter.notifyItemRemoved(position);
     }
 }

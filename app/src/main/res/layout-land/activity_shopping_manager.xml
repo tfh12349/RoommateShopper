@@ -10,7 +10,7 @@
         android:id="@+id/textView2"
         android:layout_width="603dp"
         android:layout_height="156dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="20dp"
         android:text="You can see the current list of items to edit and buy items needed, or you can look at recent purchases, make any necessary changes, and settle the costs!"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/currentList"

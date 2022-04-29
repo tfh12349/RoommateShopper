@@ -14,20 +14,38 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+/**
+ * This is the RecyclerAdapter used for the shopping list
+ */
 public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapter.ItemHolder>{
 
+    // Set up the list of items, keys, and the context
     private List<Item> items;
     private List<String> keys;
     private Context context;
     //private View.OnClickListener itemClickListener
     private final String TAG = "ItemRecyclerAdapter";
 
+    /**
+     * This is the constructor for the class. It takes in the itemList, keys, and context, and sets
+     * up the local variables
+     * @param itemList
+     * @param keyList
+     * @param context
+     */
     public ItemRecyclerAdapter( List<Item> itemList , List<String> keyList, Context context) {
+        // Set the local variables to the passed in elements
         this.items = itemList;
         this.keys = keyList;
         this.context = context;
     }
 
+    /**
+     * This class creates the viewholder for each view, with the item layout used
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType ) {
         Log.d(TAG, "onCreateViewHolder");
@@ -35,16 +53,27 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         return new ItemHolder( view );
     }
 
+    /**
+     * This is the ItemHolder class, which is used for the setup of the item elements in the recyclerView
+     */
     class ItemHolder extends RecyclerView.ViewHolder /**implements View.OnClickListener**/{
+        // Set up the textViews
         TextView name;
         TextView count;
         TextView details;
+
+        /**
+         * This is the constructor that sets up the ItemHolder
+         * @param itemView
+         */
         public ItemHolder(View itemView ) {
             super(itemView);
 
+            // Set up the name, count, and details textViews
             name = (TextView) itemView.findViewById( R.id.nameHolder );
             count = (TextView) itemView.findViewById( R.id.countHolder);
             details = (TextView) itemView.findViewById(R.id.detailsHolder);
+            // Set up the onClickListener
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -53,9 +82,12 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
                     //intent.putExtra("count", item.getCount());
                     //intent.putExtra("details", item.getDetails());
                     //context.startActivity(intent);
+                    // Print a Log message
                     Log.d(TAG, "Item name clicked" + name.getText().toString());
+                    // set the count to the clicked item count, and the key to the matching key
                     int countInt = items.get(getAdapterPosition()).getCount();
                     String key = keys.get(getAdapterPosition());
+                    // Set up the itemViewFragment and show it
                     DialogFragment itemViewFragment =
                             ItemViewDialogFragment.newInstance(getAdapterPosition(), name.getText().toString(), countInt, details.getText().toString(), key );
                     itemViewFragment.show(((AppCompatActivity)context).getSupportFragmentManager(), "fragment");
@@ -73,9 +105,15 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         }**/
     }
 
+    /**
+     * The onBindViewHolder method just sets up the elements on the itemHolder
+     * @param itemHolder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(ItemHolder itemHolder, int position){
         Log.d(TAG, "onBindViewHolder");
+        // Set the text of the three textViews
         Item item = items.get(position);
         itemHolder.name.setText(item.getName());
         itemHolder.count.setText("Count: " + item.getCount());
@@ -98,6 +136,10 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         });**/
     }
 
+    /**
+     * This method returns the count
+     * @return
+     */
     @Override
     public int getItemCount(){
         return items.size();
