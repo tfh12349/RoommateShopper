@@ -33,11 +33,13 @@ public class PurchasedListRecyclerAdapter extends RecyclerView.Adapter<Purchased
 
     class PurchaseHolder extends RecyclerView.ViewHolder {
         TextView purchaseTitle;
+        TextView purchasePrice;
         TextView purchasedItems;
         public PurchaseHolder(View view) {
             super(view);
 
             purchaseTitle = (TextView) view.findViewById(R.id.purchaseTitle);
+            purchasePrice = (TextView) view.findViewById(R.id.purchasePrice);
             purchasedItems = (TextView) view.findViewById(R.id.purchasedItems);
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -53,7 +55,13 @@ public class PurchasedListRecyclerAdapter extends RecyclerView.Adapter<Purchased
     public void onBindViewHolder(PurchasedListRecyclerAdapter.PurchaseHolder purchaseHolder, int pos) {
         Log.d(TAG, "onBindViewHolder()");
         Purchase purchase = purchases.get(pos);
-        purchaseHolder.purchaseTitle.setText("");
+        purchaseHolder.purchaseTitle.setText(purchase.getUserName());
+        purchaseHolder.purchasePrice.setText(String.format("$" + purchase.getPrice(), "%.2f"));
+        String list = "";
+        for(Item i : purchase.getItems()){
+            list += i.getName() + "\n";
+        }
+        purchaseHolder.purchasedItems.setText(list);
     }
 
     @Override

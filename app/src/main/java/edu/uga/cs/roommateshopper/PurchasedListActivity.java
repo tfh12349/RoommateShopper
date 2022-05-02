@@ -65,8 +65,9 @@ public class PurchasedListActivity extends AppCompatActivity {
         String path = email.substring(0, email.indexOf('.'));
 
         FirebaseDatabase fd = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = fd.getReference("purchases").child(path);
+        //DatabaseReference myRef = fd.getReference("purchases").child(path);
 
+        DatabaseReference myRef = fd.getReference("purchases");
         purchases = new ArrayList<Purchase>();
         keys = new ArrayList<String>();
 
@@ -75,10 +76,11 @@ public class PurchasedListActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
                     Purchase purchase = dataSnapshot.getValue(Purchase.class);
-
-                    purchases.add(purchase);
-                    keys.add(myRef.getKey());
-                    Log.d(TAG, "PurchasedListActivity.onCreate(): added " + purchase);
+                    if(purchase.getUserName().equals(path)) {
+                        purchases.add(purchase);
+                        keys.add(dataSnapshot.getKey());
+                        Log.d(TAG, "PurchasedListActivity.onCreate(): added " + purchase);
+                    }
                 }
 
                 Log.d(TAG, "PurchasedListActivity.onCreate(): setting PurchasedListRecyclerAdapter");
