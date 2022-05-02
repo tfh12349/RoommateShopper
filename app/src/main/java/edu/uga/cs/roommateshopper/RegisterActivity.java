@@ -84,15 +84,6 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Invalid email and/or " +
                         "password input", Toast.LENGTH_SHORT).show();
             }
-
-            /*Log.d(TAG, "RegisterClickListener.onClick");
-            if(email.getText() != null && password.getText() != null){
-                Intent intent = new Intent(view.getContext(), MainActivity.class);
-                startActivity(intent);
-            }
-            else{
-
-            }*/
         }
     }
 }

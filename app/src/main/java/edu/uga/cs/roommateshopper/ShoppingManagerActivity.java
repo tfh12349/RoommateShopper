@@ -108,6 +108,8 @@ public class ShoppingManagerActivity extends AppCompatActivity {
         @Override
         public void onClick(View view){
             Log.d(TAG, "PurchasedClickListener.onClick");
+            Intent intent = new Intent(view.getContext(), PurchasedListActivity.class);
+            view.getContext().startActivity(intent);
         }
     }
 }
