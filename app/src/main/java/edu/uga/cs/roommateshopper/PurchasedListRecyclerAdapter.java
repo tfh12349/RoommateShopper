@@ -1,6 +1,7 @@
 package edu.uga.cs.roommateshopper;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +46,14 @@ public class PurchasedListRecyclerAdapter extends RecyclerView.Adapter<Purchased
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    double price = purchases.get(getAdapterPosition()).getPrice();
+                    List<Item> items = purchases.get(getAdapterPosition()).getItems();
+                    String userName = purchases.get(getAdapterPosition()).getUserName();
+                    String key = keys.get(getAdapterPosition());
 
+                    Intent intent = new Intent(view.getContext(), PurchaseLookActivity.class);
+                    intent.putExtra("Key", key);
+                    view.getContext().startActivity(intent);
                 }
             });
         }
