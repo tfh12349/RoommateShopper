@@ -135,14 +135,15 @@ public class ViewListActivity extends AppCompatActivity
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("shoppinglist");
         // Set the value and add an onSuccessListener
-        myRef.push().setValue( item )
-                .addOnSuccessListener( new OnSuccessListener<Void>() {
+        String addValue = myRef.push().getKey();
+        myRef.child(addValue).setValue(item).addOnSuccessListener( new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
 
                         // Add the item to items, the key to keys, and update the adapter
                         items.add( item );
-                        keys.add(myRef.push().getKey());
+                        keys.add(addValue);//myRef.push().getKey());
+                        Log.d(TAG, "Key added: " + keys.get(keys.size()-1));
                         adapter.notifyItemInserted(items.size() - 1);
 
                         Log.d( TAG, "Item saved: " + item );
@@ -225,6 +226,7 @@ public class ViewListActivity extends AppCompatActivity
                 }
             });**/
             // Remove the element using the key
+            Log.d("ViewListActivity", "key: " + key);
             myRef.child(key).removeValue();
 
             // Update the lists, then notify the adapter of the removed item
@@ -243,6 +245,7 @@ public class ViewListActivity extends AppCompatActivity
             cartRef.push().setValue(item);
 
             // Remove the item from the database
+            Log.d("ViewListActivity", "key: " + key);
             myRef.child(key).removeValue();
             //Query query = myRef.child(key);//.orderByChild("details").equalTo(item.getDetails());
 
