@@ -220,5 +220,8 @@ public class PurchaseLookActivity extends AppCompatActivity
         myRef.child(key).removeValue();
 
         adapter.notifyItemRemoved(pos);
+
+        Intent intent = new Intent(getApplicationContext(), PurchasedListActivity.class);
+        startActivity(intent);
     }
 }

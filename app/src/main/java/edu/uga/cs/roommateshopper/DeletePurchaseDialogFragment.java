@@ -59,6 +59,11 @@ public class DeletePurchaseDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle onSavedInstanceState) {
+        pos = getArguments().getInt("position");
+        price = getArguments().getDouble("price");
+        userName = getArguments().getString("userName");
+        key = getArguments().getString("key");
+
         if(onSavedInstanceState != null){
             // Set the position, name, etc. to the connected saved arguments
             pos = onSavedInstanceState.getInt( "position" );
