@@ -30,7 +30,7 @@ public class RemoveItemDialogFragment extends DialogFragment {
      * something occurs, have the activity implement this and override the method
      */
     public interface RemoveItemDialogListener {
-        void onFinishRemoveItemDialog(int position, Item item, String key );
+        void onFinishRemoveItemDialog(int position, Item item, String key);
     }
 
     // Just a general Constructor

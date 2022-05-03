@@ -1,6 +1,7 @@
 package edu.uga.cs.roommateshopper;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,14 +37,14 @@ public class PurchasedItemRecyclerAdapter extends RecyclerView.Adapter<Purchased
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    /* Get the count and details, and the key of the item
-                    int countInt = items.get(getAdapterPosition()).getCount();
+                    int count = items.get(getAdapterPosition()).getCount();
                     String details = items.get(getAdapterPosition()).getDetails();
-                    String key = keys.get(getAdapterPosition());
-                    // Create the dialogFragment for removing the item, then show it
-                    DialogFragment removeViewFragment =
-                            RemoveItemDialogFragment.newInstance(getAdapterPosition(), itemName.getText().toString(), countInt, details, key );
-                    removeViewFragment.show(((AppCompatActivity)context).getSupportFragmentManager(), "fragment");*/
+                    System.out.println(getAdapterPosition());
+                    String key = keys.get(0);
+
+                    DialogFragment deleteItem = DeletePurchasedItemDialog.newInstance(
+                            getAdapterPosition(), itemName.getText().toString(), count, details, key);
+                    deleteItem.show(((AppCompatActivity) context).getSupportFragmentManager(), "fragment");
                 }
             });
         }
@@ -51,7 +52,7 @@ public class PurchasedItemRecyclerAdapter extends RecyclerView.Adapter<Purchased
 
     public PurchasedItemRecyclerAdapter.ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder");
-        View view = LayoutInflater.from( parent.getContext()).inflate( R.layout.cart_item, parent, false );
+        View view = LayoutInflater.from( parent.getContext()).inflate(R.layout.cart_item, parent, false);
         return new PurchasedItemRecyclerAdapter.ItemHolder(view);
     }
 

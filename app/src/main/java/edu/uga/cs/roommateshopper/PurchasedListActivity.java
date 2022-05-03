@@ -78,6 +78,13 @@ public class PurchasedListActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
                     Purchase purchase = dataSnapshot.getValue(Purchase.class);
                     if(purchase.getUserName().equals(path)) {
+                        /*for (int i = 0; i < purchase.getItems().size(); i++) {
+                            System.out.println(purchase.getItems().get(i));
+                            if (purchase.getItems().get(i) == null) {
+                                purchase.getItems().remove(i);
+                                i--;
+                            }
+                        }*/
                         purchases.add(purchase);
                         keys.add(dataSnapshot.getKey());
                         Log.d(TAG, "PurchasedListActivity.onCreate(): added " + purchase);

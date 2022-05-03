@@ -67,6 +67,7 @@ public class PurchasedListRecyclerAdapter extends RecyclerView.Adapter<Purchased
         purchaseHolder.purchaseTitle.setText(purchase.getUserName());
         purchaseHolder.purchasePrice.setText(String.format("$" + purchase.getPrice(), "%.2f"));
         String list = "";
+        System.out.println("purchases size: " + purchase.getItems().size());
         for(Item i : purchase.getItems()){
             list += i.getName() + "\n";
         }
