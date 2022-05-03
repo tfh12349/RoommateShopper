@@ -199,6 +199,10 @@ public class PurchaseLookActivity extends AppCompatActivity
         String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
         DatabaseReference userRef = database.getReference("users");
+        DatabaseReference shoppingReference = database.getReference("shoppinglist");
+        for(Item item: purchase.getItems()){
+            shoppingReference.push().setValue(item);
+        }
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot snapshot) {
