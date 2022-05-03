@@ -43,6 +43,7 @@ public class PurchaseLookActivity extends AppCompatActivity
     private List<Item> itemList;
     private List<String> keys;
     String userName;
+    Double price;
 
     FirebaseDatabase database;
 
@@ -73,6 +74,7 @@ public class PurchaseLookActivity extends AppCompatActivity
         items = new ArrayList<Item>();
         keys = new ArrayList<String>();
         String key = getIntent().getStringExtra("Key");
+        price = getIntent().getDoubleExtra("Price", 0);
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -84,7 +86,7 @@ public class PurchaseLookActivity extends AppCompatActivity
                         Purchase purchase = dataSnapshot.getValue(Purchase.class);
                         items.addAll(purchase.getItems());
                         userName = purchase.getUserName();
-                        double price = purchase.getPrice();
+                        price = purchase.getPrice();
                         itemList = purchase.getItems();
                         priceTextView.setText("Price: $" + price);
 
@@ -164,7 +166,7 @@ public class PurchaseLookActivity extends AppCompatActivity
                     Price p = snapshot1.getValue(Price.class);
                     if(p.getUserName().equals(cartPath)){
                         String key = snapshot1.getKey();
-                        double updatePrice = p.getPriceTotal() - Double.parseDouble(priceTextView.getText().toString().substring(8)) + purchase.getPrice();
+                        double updatePrice = p.getPriceTotal() - price + purchase.getPrice();
                         userRef.child(key).child("priceTotal").setValue(updatePrice);
                     }
                 }

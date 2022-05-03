@@ -53,6 +53,7 @@ public class PurchasedListRecyclerAdapter extends RecyclerView.Adapter<Purchased
 
                     Intent intent = new Intent(view.getContext(), PurchaseLookActivity.class);
                     intent.putExtra("Key", key);
+                    intent.putExtra("Price", price);
                     view.getContext().startActivity(intent);
                 }
             });
