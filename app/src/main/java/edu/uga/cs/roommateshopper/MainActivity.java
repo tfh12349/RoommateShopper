@@ -2,6 +2,7 @@ package edu.uga.cs.roommateshopper;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -17,6 +18,12 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.android.gms.auth.api.credentials.IdentityProviders;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -97,6 +104,26 @@ public class MainActivity extends AppCompatActivity {
             if(response != null) {
                 Log.d(TAG, "MainActivity: onSignInResult: response.getEmail(): " + response.getEmail());
             }
+
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("users");
+            Query query = myRef.orderByChild("userName").equalTo(response.getEmail().substring(0, response.getEmail().indexOf('.')));
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if(!snapshot.exists()){
+                        Price p = new Price(response.getEmail().substring(0, response.getEmail().indexOf('.')), 0);
+                        myRef.push().setValue(p);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
 
             Intent intent = new Intent(this, ShoppingManagerActivity.class);
             startActivity(intent);

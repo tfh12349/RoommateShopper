@@ -1,3 +1,60 @@
+/**
+ * This is code for updating and deleting the user's price
+ *
+ *
+ * For updating the price:
+ * Let's assume current price is called price, and the new price is newPrice
+ * String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+ * String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+ * DatabaseReference userRef = database.getReference("users");
+ *
+ * userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+ *             @Override
+ *             public void onDataChange(@NonNull DataSnapshot snapshot) {
+ *                 for(DataSnapshot snapshot1: snapshot.getChildren()){
+ *                     Price p = snapshot1.getValue(Price.class);
+ *                     if(p.getUserName().equals(cartPath)){
+ *                         String key = snapshot1.getKey();
+ *                         double updatePrice = p.getTotalPrice() - price + newPrice;
+ *                         userRef.child(key).child("priceTotal").setValue(updatePrice);
+ *                     }
+ *                 }
+ *             }
+ *
+ *             @Override
+ *             public void onCancelled(@NonNull DatabaseError error) {
+ *
+ *             }
+ *         });
+ *
+ * For deleting the purchase:
+ * Again, assume current price is simply called price
+ *
+ * String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+ *  * String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+ *  * DatabaseReference userRef = database.getReference("users");
+ * userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+ *  *             @Override
+ *  *             public void onDataChange(@NonNull DataSnapshot snapshot) {
+ *  *                 for(DataSnapshot snapshot1: snapshot.getChildren()){
+ *  *                     Price p = snapshot1.getValue(Price.class);
+ *  *                     if(p.getUserName().equals(cartPath)){
+ *  *                         String key = snapshot1.getKey();
+ *  *                         double updatePrice = p.getTotalPrice() - price;
+ *  *                         userRef.child(key).child("priceTotal").setValue(updatePrice);
+ *  *                     }
+ *  *                 }
+ *  *             }
+ *  *
+ *  *             @Override
+ *  *             public void onCancelled(@NonNull DatabaseError error) {
+ *  *
+ *  *             }
+ *  *         });
+ */
+
+
+
 package edu.uga.cs.roommateshopper;
 
 import androidx.appcompat.app.ActionBar;

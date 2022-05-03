@@ -1,5 +1,6 @@
 package edu.uga.cs.roommateshopper;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -102,7 +104,7 @@ public class CartActivity extends AppCompatActivity
                     Item item = postSnapshot.getValue(Item.class);
                     // Add the item to items and add the key to keys
                     items.add(item);
-                    keys.add(myRef.getKey());
+                    keys.add(postSnapshot.getKey());//myRef.getKey());
                     Log.d( TAG, "ViewListActivity.onCreate(): added: " + item );
                 }
                 Log.d( TAG, "ViewListActivity.onCreate(): setting recyclerAdapter" );
@@ -177,6 +179,26 @@ public class CartActivity extends AppCompatActivity
         // Get the database and the cart of the user
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("carts").child(cartPath);
+        DatabaseReference userRef = database.getReference("users");
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot snapshot1: snapshot.getChildren()){
+                    Price p = snapshot1.getValue(Price.class);
+                    if(p.getUserName().equals(cartPath)){
+                        String key = snapshot1.getKey();
+                        double newPrice = p.getPriceTotal() + price;
+                        userRef.child(key).child("priceTotal").setValue(newPrice);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         // Get the purchases list
         DatabaseReference newRef = database.getReference("purchases");
@@ -231,6 +253,7 @@ public class CartActivity extends AppCompatActivity
         shoppingReference.push().setValue(item);
 
         // Remove the value from the cart
+        Log.d("CartActivity", "key: " + key);
         myRef.child(key).removeValue();
         /**Query query = myRef.child(key);
 
