@@ -164,7 +164,7 @@ public class PurchaseLookActivity extends AppCompatActivity
                     Price p = snapshot1.getValue(Price.class);
                     if(p.getUserName().equals(cartPath)){
                         String key = snapshot1.getKey();
-                        double updatePrice = p.getPriceTotal() - p.getPriceTotal() + purchase.getPrice();
+                        double updatePrice = p.getPriceTotal() - Double.parseDouble(priceTextView.getText().toString().substring(8)) + purchase.getPrice();
                         userRef.child(key).child("priceTotal").setValue(updatePrice);
                     }
                 }

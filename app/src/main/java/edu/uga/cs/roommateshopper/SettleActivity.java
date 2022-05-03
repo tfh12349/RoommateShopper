@@ -142,6 +142,22 @@ public class SettleActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 myRef.removeValue();
+                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot snapshot1: snapshot.getChildren()){
+                            Price p = snapshot1.getValue(Price.class);
+                            String key = snapshot1.getKey();
+                            userRef.child(key).child("priceTotal").setValue(0);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
                 Intent intent = new Intent(getApplicationContext(), PurchasedListActivity.class);
                 startActivity(intent);
             }

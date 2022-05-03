@@ -81,6 +81,7 @@ public class PurchasedListActivity extends AppCompatActivity {
                         purchases.add(purchase);
                         keys.add(dataSnapshot.getKey());
                         Log.d(TAG, "PurchasedListActivity.onCreate(): added " + purchase);
+                        Log.d(TAG, "key" + dataSnapshot.getKey());
                     }
                 }
 
