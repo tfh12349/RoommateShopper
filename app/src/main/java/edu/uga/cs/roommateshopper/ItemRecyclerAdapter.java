@@ -83,7 +83,7 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
                     //intent.putExtra("details", item.getDetails());
                     //context.startActivity(intent);
                     // Print a Log message
-                    Log.d(TAG, "Item name clicked" + name.getText().toString());
+                    Log.d(TAG, "Item name clicked " + name.getText().toString());
                     // set the count to the clicked item count, and the key to the matching key
                     int countInt = items.get(getAdapterPosition()).getCount();
                     String key = keys.get(getAdapterPosition());
