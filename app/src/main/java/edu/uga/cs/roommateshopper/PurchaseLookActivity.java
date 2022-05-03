@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PurchaseLookActivity extends AppCompatActivity
-    implements UpdatePriceDialogFragment.UpdatePriceDialogListener {
+    implements UpdatePriceDialogFragment.UpdatePriceDialogListener, DeletePurchaseDialogFragment.DeletePurchaseDialogListener {
 
     private final String TAG = "PurchaseLookActivity";
 
@@ -43,6 +43,8 @@ public class PurchaseLookActivity extends AppCompatActivity
     private List<Item> itemList;
     private List<String> keys;
     String userName;
+
+    FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +67,7 @@ public class PurchaseLookActivity extends AppCompatActivity
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String path = email.substring(0, email.indexOf('.'));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("purchases");
 
         items = new ArrayList<Item>();
@@ -75,7 +77,9 @@ public class PurchaseLookActivity extends AppCompatActivity
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int i = 0;
                 for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
+                    i++;
                     if (dataSnapshot.getKey().equals(key)) {
                         Purchase purchase = dataSnapshot.getValue(Purchase.class);
                         items.addAll(purchase.getItems());
@@ -84,11 +88,13 @@ public class PurchaseLookActivity extends AppCompatActivity
                         itemList = purchase.getItems();
                         priceTextView.setText("Price: $" + price);
 
+                        final int pos = i;
+
                         updatePriceButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                DialogFragment updateFragment = UpdatePriceDialogFragment.newInstance(0, userName, price,
-                                        itemList, key);
+                                DialogFragment updateFragment = UpdatePriceDialogFragment.newInstance(pos, userName,
+                                        price, itemList, key);
                                 updateFragment.show(((AppCompatActivity) PurchaseLookActivity.this).getSupportFragmentManager(),
                                         "fragment");
                             }
@@ -97,7 +103,7 @@ public class PurchaseLookActivity extends AppCompatActivity
                         deleteListButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                DialogFragment deleteFragment = DeletePurchaseDialogFragment.newInstance(0, itemList, price,
+                                DialogFragment deleteFragment = DeletePurchaseDialogFragment.newInstance(pos, itemList, price,
                                         userName, key);
                                 deleteFragment.show(((AppCompatActivity) PurchaseLookActivity.this).getSupportFragmentManager(),
                                         "fragment");
@@ -146,16 +152,70 @@ public class PurchaseLookActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFinishUpdatePriceDialog(int pos, Purchase purchase, int action, String key) {
+    public void onFinishUpdatePriceDialog(int pos, Purchase purchase, String key) {
+        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+        DatabaseReference userRef = database.getReference("users");
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot snapshot1: snapshot.getChildren()){
+                    Price p = snapshot1.getValue(Price.class);
+                    if(p.getUserName().equals(cartPath)){
+                        String key = snapshot1.getKey();
+                        double updatePrice = p.getPriceTotal() - p.getPriceTotal() + purchase.getPrice();
+                        userRef.child(key).child("priceTotal").setValue(updatePrice);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("purchases");
 
-        if (action == 1) {
-            myRef.child(key).child("items").setValue(itemList);
-            myRef.child(key).child("price").setValue(purchase.getPrice());
-            myRef.child(key).child("userName").setValue(userName);
+        myRef.child(key).child("items").setValue(purchase.getItems());
+        myRef.child(key).child("price").setValue(purchase.getPrice());
+        myRef.child(key).child("userName").setValue(purchase.getUserName());
 
-            adapter.notifyItemChanged(pos);
-        }
+        adapter.notifyItemChanged(pos);
+    }
+
+    @Override
+    public void onFinishDeletePurchaseDialog(int pos, Purchase purchase, String key) {
+
+        database = FirebaseDatabase.getInstance();
+
+        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String cartPath = userEmail.substring(0, userEmail.indexOf('.'));
+        DatabaseReference userRef = database.getReference("users");
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+           @Override
+           public void onDataChange(@NonNull DataSnapshot snapshot) {
+              for(DataSnapshot snapshot1: snapshot.getChildren()){
+                 Price p = snapshot1.getValue(Price.class);
+                 if(p.getUserName().equals(cartPath)){
+                    String key = snapshot1.getKey();
+                    double updatePrice = p.getPriceTotal() - purchase.getPrice();
+                    userRef.child(key).child("priceTotal").setValue(updatePrice);
+                 }
+              }
+           }
+           @Override
+              public void onCancelled(@NonNull DatabaseError error) {
+
+           }
+        });
+
+        DatabaseReference myRef = database.getReference("purchases");
+
+        myRef.child(key).removeValue();
+
+        adapter.notifyItemRemoved(pos);
     }
 }

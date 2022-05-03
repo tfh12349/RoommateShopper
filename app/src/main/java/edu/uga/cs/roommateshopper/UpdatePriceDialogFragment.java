@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 
 import androidx.fragment.app.DialogFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UpdatePriceDialogFragment extends DialogFragment {
@@ -20,22 +22,26 @@ public class UpdatePriceDialogFragment extends DialogFragment {
     private int pos;
 
     private double price;
-    private String key;
+    private String userName, key;
+    private List<Item> items;
 
     public interface UpdatePriceDialogListener {
-        void onFinishUpdatePriceDialog(int pos, Purchase purchase, int action, String key);
+        void onFinishUpdatePriceDialog(int pos, Purchase purchase, String key);
     }
 
-    public UpdatePriceDialogFragment() {
+    public UpdatePriceDialogFragment(List<Item> items) {
         super();
+        this.items = items;
     }
 
     public static UpdatePriceDialogFragment newInstance(int pos, String userName, double price, List<Item> items, String key) {
-        UpdatePriceDialogFragment dialogFragment = new UpdatePriceDialogFragment();
+        UpdatePriceDialogFragment dialogFragment = new UpdatePriceDialogFragment(items);
 
         Bundle args = new Bundle();
         args.putInt("position", pos);
+        args.putString("userName", userName);
         args.putDouble("price", price);
+        //args.putParcelableArrayList("items", (ArrayList<? extends Parcelable>) items);
         args.putString("key", key);
 
 
@@ -49,7 +55,9 @@ public class UpdatePriceDialogFragment extends DialogFragment {
         if(savedInstanceState != null){
             // Set the position, name, etc. to the connected saved arguments
             pos = savedInstanceState.getInt("position");
+            userName = savedInstanceState.getString("userName");
             price = savedInstanceState.getDouble("price");
+            items = savedInstanceState.getParcelable("items");
             key = savedInstanceState.getString("key");
         }
 
@@ -74,16 +82,17 @@ public class UpdatePriceDialogFragment extends DialogFragment {
     private class UpdateButtonClickListener implements DialogInterface.OnClickListener {
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            /*if (!updatePrice.getText().toString().equals("") &&
+            if (!updatePrice.getText().toString().equals("") &&
             !updatePrice.getText().toString().equals(".")) {
                 double price = Double.parseDouble(updatePrice.getText().toString());
-                Purchase purchase = new Purchase(null, price, null);
+                Purchase purchase = new Purchase(userName, price, items);
+                System.out.println(purchase.getItems().get(0).getName());
 
                 UpdatePriceDialogFragment.UpdatePriceDialogListener listener =
                         (UpdatePriceDialogFragment.UpdatePriceDialogListener) getActivity();
 
-                listener.onFinishUpdatePriceDialog(pos, purchase, 1, key);
-            }*/
+                listener.onFinishUpdatePriceDialog(pos, purchase, key);
+            }
             dismiss();
         }
     }
