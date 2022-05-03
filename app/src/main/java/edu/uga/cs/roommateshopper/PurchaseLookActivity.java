@@ -3,6 +3,7 @@ package edu.uga.cs.roommateshopper;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,7 +27,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PurchaseLookActivity extends AppCompatActivity {
+public class PurchaseLookActivity extends AppCompatActivity
+    implements UpdatePriceDialogFragment.UpdatePriceDialogListener {
 
     private final String TAG = "PurchaseLookActivity";
 
@@ -37,9 +39,10 @@ public class PurchaseLookActivity extends AppCompatActivity {
     private TextView priceTextView;
     private Button updatePriceButton, deleteListButton;
 
-    private List<Purchase> purchases;
     private List<Item> items;
+    private List<Item> itemList;
     private List<String> keys;
+    String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +58,6 @@ public class PurchaseLookActivity extends AppCompatActivity {
 
         updatePriceButton = (Button) findViewById(R.id.updatePriceButton);
         deleteListButton = (Button) findViewById(R.id.deleteListButton);
-
-        updatePriceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
-        deleteListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
 
         layoutManager = new LinearLayoutManager(this);
         purchasedItemList.setLayoutManager(layoutManager);
@@ -90,8 +79,30 @@ public class PurchaseLookActivity extends AppCompatActivity {
                     if (dataSnapshot.getKey().equals(key)) {
                         Purchase purchase = dataSnapshot.getValue(Purchase.class);
                         items.addAll(purchase.getItems());
+                        userName = purchase.getUserName();
                         double price = purchase.getPrice();
+                        itemList = purchase.getItems();
                         priceTextView.setText("Price: $" + price);
+
+                        updatePriceButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                DialogFragment updateFragment = UpdatePriceDialogFragment.newInstance(0, userName, price,
+                                        itemList, key);
+                                updateFragment.show(((AppCompatActivity) PurchaseLookActivity.this).getSupportFragmentManager(),
+                                        "fragment");
+                            }
+                        });
+
+                        deleteListButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                DialogFragment deleteFragment = DeletePurchaseDialogFragment.newInstance(0, itemList, price,
+                                        userName, key);
+                                deleteFragment.show(((AppCompatActivity) PurchaseLookActivity.this).getSupportFragmentManager(),
+                                        "fragment");
+                            }
+                        });
                     }
                 }
                 adapter = new PurchasedItemRecyclerAdapter(items, keys, PurchaseLookActivity.this);
@@ -131,6 +142,20 @@ public class PurchaseLookActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onFinishUpdatePriceDialog(int pos, Purchase purchase, int action, String key) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("purchases");
+
+        if (action == 1) {
+            myRef.child(key).child("items").setValue(itemList);
+            myRef.child(key).child("price").setValue(purchase.getPrice());
+            myRef.child(key).child("userName").setValue(userName);
+
+            adapter.notifyItemChanged(pos);
         }
     }
 }

@@ -52,6 +52,7 @@ public class ViewListActivity extends AppCompatActivity
     // Set up the list of items and the list of keys (keys are for the items
     private List<Item> items;
     private List<String> keys;
+    private String userNames;
 
     /**
      * This is the onCreate method. It sets up the action bar, the recycler view, and the adapter
@@ -82,6 +83,9 @@ public class ViewListActivity extends AppCompatActivity
                 newFragment.show(getSupportFragmentManager(), "addFragment");
             }
         });
+
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        userNames = email.substring(0, email.indexOf('.'));
 
         // Set up the layoutManager and give it to the recyclerView
         layoutManager = new LinearLayoutManager(this );
