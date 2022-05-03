@@ -41,7 +41,6 @@ public class UpdatePriceDialogFragment extends DialogFragment {
         args.putInt("position", pos);
         args.putString("userName", userName);
         args.putDouble("price", price);
-        //args.putParcelableArrayList("items", (ArrayList<? extends Parcelable>) items);
         args.putString("key", key);
 
 
@@ -52,12 +51,17 @@ public class UpdatePriceDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+        pos = getArguments().getInt("position");
+        userName = getArguments().getString("userName");
+        price = getArguments().getDouble("price");
+        key = getArguments().getString("key");
+        System.out.println(key);
+
         if(savedInstanceState != null){
             // Set the position, name, etc. to the connected saved arguments
             pos = savedInstanceState.getInt("position");
             userName = savedInstanceState.getString("userName");
             price = savedInstanceState.getDouble("price");
-            items = savedInstanceState.getParcelable("items");
             key = savedInstanceState.getString("key");
         }
 

@@ -183,6 +183,9 @@ public class PurchaseLookActivity extends AppCompatActivity
         myRef.child(key).child("price").setValue(purchase.getPrice());
         myRef.child(key).child("userName").setValue(purchase.getUserName());
 
+        String newPrice = purchase.getPrice() + "";
+        priceTextView.setText("Price: $" + newPrice);
+
         adapter.notifyItemChanged(pos);
     }
 
